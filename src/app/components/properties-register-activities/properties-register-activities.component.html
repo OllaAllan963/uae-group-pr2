@@ -16,10 +16,10 @@
                 }
             </p>
         </div>
-        <div *ngIf="uaeInternationalPropertyCActs" class="news-wrap" data-aos="fade-right" data-aos-duration="1000"
+        <div *ngIf="uaeInternationalPropertyCActs" class="news-wrap" data-aos="fade-up" data-aos-duration="1000"
         [ngStyle]="{'direction' : currentLang === 'en' ? 'ltr' : 'rtl'}">
             <div class="row">
-                <div class="col-xl-6 col-md-12 col-12" data-aos="fade-right">
+                <div class="col-xl-6 col-md-12 col-12" data-aos="fade-up">
                     @for(activity of uaeInternationalPropertyCActs.activities;track activity.id){
                     @if(activity.id <= 2){ <div class="news-item news-item-sm">
                         <a href="" class="news-img-link">
@@ -51,7 +51,7 @@
                 }
                 }
             </div>
-            <div class="col-xl-6 col-md-12 col-12" data-aos="fade-left">
+            <div class="col-xl-6 col-md-12 col-12" data-aos="fade-up">
                 @for(activity of uaeInternationalPropertyCActs.activities;track activity.id){
                 @if(activity.id > 2){
                 <div class="news-item news-item-sm">
