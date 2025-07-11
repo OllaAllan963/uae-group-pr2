@@ -82,10 +82,10 @@
 /* ::after overlay image (bottom-right corner) */
 .image::after {
   content: "";
-  position: absolute;
+  /* position: absolute; */
   width: 60%;
   height: 50%;
-  background-image: url('/assets/images/carousel/img13.png');
+  /* background-image: url('/assets/images/carousel/img13.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 2;
@@ -181,4 +181,24 @@
   .about-content .image::before {
     display: none;
   }
+}
+
+
+/* img13 */
+.image-column {
+  position: relative; /* required for positioning the overlay */
+}
+
+.image-overlay {
+  content: "";
+  position: absolute;
+  width: 60%;
+  height: 50%;
+  bottom: -10%;
+  right: 0;
+  z-index: 2;
+  border-radius: 8px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }

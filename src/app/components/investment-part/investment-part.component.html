@@ -16,9 +16,18 @@
     </p>
     <div class="investments-content" data-aos="fade-up" data-aos-duration="1000">
 
-      <div class="col" data-aos="fade-up">
+      <!-- <div class="col" data-aos="fade-up">
         <div class="image image-column">
           <img [src]="uaeInvestmentDevelopmentC.image1" [alt]="uaeInvestmentDevelopmentC.title" />
+        </div>
+      </div> -->
+
+      <div class="col" data-aos="fade-up">
+        <div class="image image-column position-relative">
+          <img [src]="uaeInvestmentDevelopmentC.image1" [alt]="uaeInvestmentDevelopmentC.title" />
+
+          <!-- This div mimics the ::after pseudo-element -->
+          <div class="image-overlay" style="background-image: url('assets/images/carousel/img13.png');"></div>
         </div>
       </div>
 
