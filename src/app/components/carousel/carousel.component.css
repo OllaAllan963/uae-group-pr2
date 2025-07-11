@@ -135,12 +135,24 @@
     width: 0;
 }
 
-.thumbnail .company {
+/* .thumbnail .company {
     width: 150px;
     height: 220px;
     filter: brightness(.5);
     transition: .5s;
     flex-shrink: 0;
+} */
+
+.thumbnail .company {
+    position: relative;
+    /* ✅ important: ensures .content is placed relative to this */
+    width: 150px;
+    height: 220px;
+    filter: brightness(.5);
+    transition: .5s;
+    flex-shrink: 0;
+    overflow: hidden;
+    /* ✅ clip content correctly */
 }
 
 .thumbnail .company img {
@@ -164,7 +176,7 @@
     background-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent);
 }
 
-.thumbnail .company .content {
+/* .thumbnail .company .content {
     position: absolute;
     inset: 3px;
     color: #fff;
@@ -173,6 +185,27 @@
     justify-content: center;
     text-align: center;
     font-size: 18px;
+    text-shadow:
+        -1px -1px 2px black,
+        1px -1px 2px black,
+        -1px 1px 2px black,
+        1px 1px 2px black;
+} */
+
+.thumbnail .company .content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    color: #fff;
+    /* background: rgba(0, 0, 0, 0.4); */
+    /* ✅ make text visible */
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     text-shadow:
         -1px -1px 2px black,
         1px -1px 2px black,

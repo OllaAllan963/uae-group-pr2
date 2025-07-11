@@ -59,11 +59,20 @@
                             'validation.Home' | translate}}</a></li>
                     <li><a routerLink="about-us" class="nav-link px-2 text-white tajawal-medium mb-1">{{
                             'validation.AboutUs' | translate}}</a></li>
-                    <li><a href="#" class="nav-link px-2 text-white tajawal-medium mb-1">{{ 'validation.Companies' |
-                            translate}}</a></li>
+                    @for(company of companies;track company.id;let i=$index){
+                    <li><a style="cursor: pointer;" (click)="goToCompany(company)"
+                            class="nav-link px-2 text-white tajawal-medium mb-1">
+                            @if(currentLang === 'en'){
+                            {{ company.title }}
+                            }@else{
+                            {{ company.titleAr }}
+                            }
+                        </a></li>
+                    }
                     <li><a href="#" class="nav-link px-2 text-white tajawal-medium mb-1">{{ 'validation.Careers' |
                             translate}}</a></li>
-                    <li><a href="#" class="nav-link px-2 text-white tajawal-medium mb-1">{{ 'validation.ContactUs' |
+                    <li><a routerLink="contact-us" class="nav-link px-2 text-white tajawal-medium mb-1">{{
+                            'validation.ContactUs' |
                             translate}}</a></li>
                 </ul>
             </div>
