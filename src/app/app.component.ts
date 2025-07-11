@@ -1,5 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RouterOutlet } from '@angular/router';
+import {
+  Router,
+  NavigationStart,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError,
+  RouterOutlet,
+} from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -10,65 +17,88 @@ import { SharedModule } from './shared/shared.module';
   standalone: true,
   imports: [RouterOutlet, HeaderComponent, FooterComponent, SharedModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
+  title = 'uaegroupProject';
   isLoading: boolean = true;
+
   private router = inject(Router);
   translateService = inject(TranslateService);
 
   ngOnInit() {
     this.translateService.setDefaultLang('ar');
 
-    // Listen to router events
-    this.router.events.subscribe(event => {
+    this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.isLoading = true;
       }
 
-      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-        // Wait for images and videos to load on the new route
-        this.waitForMediaToLoad().then(() => {
+      if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.waitForMediaToPlay().then(() => {
           this.isLoading = false;
         });
       }
     });
   }
 
-  private waitForMediaToLoad(): Promise<void> {
-    return new Promise(resolve => {
-      const mediaElements = Array.from(document.querySelectorAll('img, video')) as (HTMLImageElement | HTMLVideoElement)[];
-      let loadedCount = 0;
+  private waitForMediaToPlay(): Promise<void> {
+    return new Promise((resolve) => {
+      const images = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
+      const videos = Array.from(document.querySelectorAll('video')) as HTMLVideoElement[];
 
-      const checkLoaded = () => {
-        loadedCount++;
-        if (loadedCount === mediaElements.length) {
+      const total = images.length + videos.length;
+      let completed = 0;
+
+      const checkDone = () => {
+        completed++;
+        if (completed >= total) {
           resolve();
         }
       };
 
-      if (mediaElements.length === 0) {
+      if (total === 0) {
         resolve();
         return;
       }
 
-      mediaElements.forEach(el => {
-        if (el.tagName === 'IMG') {
-          const img = el as HTMLImageElement;
-          if (img.complete) {
-            checkLoaded();
-          } else {
-            img.onload = img.onerror = checkLoaded;
-          }
-        } else if (el.tagName === 'VIDEO') {
-          const video = el as HTMLVideoElement;
-          if (video.readyState >= 3) {
-            checkLoaded();
-          } else {
-            video.onloadeddata = video.onerror = checkLoaded;
+      // Handle images
+      images.forEach((img) => {
+        if (img.complete) {
+          checkDone();
+        } else {
+          img.onload = img.onerror = checkDone;
+        }
+      });
+
+      // Handle videos
+      videos.forEach((video) => {
+        const onPlay = () => {
+          video.removeEventListener('play', onPlay);
+          checkDone();
+        };
+
+        if (!video.paused && !video.ended) {
+          checkDone();
+        } else {
+          video.addEventListener('play', onPlay);
+
+          // Try to force autoplay
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.catch(() => {
+              // Autoplay blocked — wait for user interaction
+            });
           }
         }
       });
+
+      // Fallback timeout in case media fails
+      setTimeout(() => resolve(), 15000); // 15 seconds max wait
     });
   }
 }
