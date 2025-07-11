@@ -12,7 +12,7 @@
 }
 
 .loader-logo {
-    max-width: 100px;
+    max-width: 150px;
     animation: fadeIn 1.5s ease-in-out infinite alternate;
 }
 
