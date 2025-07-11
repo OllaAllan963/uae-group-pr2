@@ -42,16 +42,15 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // Run initially on first load (in case no route event happens)
+    // Trigger once on load too
     this.handleLoading();
   }
 
   private async handleLoading(): Promise<void> {
-    const tenSecondsPassed = new Promise(resolve => setTimeout(resolve, 10000));
-    const mediaLoaded = this.waitForMediaToRender();
+    const wait10Seconds = new Promise(resolve => setTimeout(resolve, 10000));
+    const waitMedia = this.waitForMediaToRender();
 
-    // Wait for both 10s and media to finish
-    await Promise.all([tenSecondsPassed, mediaLoaded]);
+    await Promise.all([wait10Seconds, waitMedia]);
 
     this.isLoading = false;
   }
@@ -76,7 +75,6 @@ export class AppComponent implements OnInit {
         return;
       }
 
-      // Wait for images
       images.forEach(img => {
         if (img.complete) {
           checkDone();
@@ -85,7 +83,6 @@ export class AppComponent implements OnInit {
         }
       });
 
-      // Wait for videos to play
       videos.forEach(video => {
         const onPlaying = () => {
           video.removeEventListener('playing', onPlaying);
@@ -93,21 +90,16 @@ export class AppComponent implements OnInit {
         };
 
         if (!video.paused && !video.ended && video.readyState >= 2) {
-          checkDone(); // Already playing
+          checkDone();
         } else {
           video.addEventListener('playing', onPlaying);
-
-          // Try autoplay
           const playPromise = video.play();
           if (playPromise && typeof playPromise.then === 'function') {
-            playPromise.catch(() => {
-              // autoplay blocked
-            });
+            playPromise.catch(() => { });
           }
         }
       });
 
-      // Fallback: max 15s for media in case it never plays
       setTimeout(() => {
         resolve();
       }, 15000);

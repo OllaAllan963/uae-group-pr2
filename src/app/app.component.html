@@ -6,11 +6,10 @@
 </div> -->
 
 
+<!-- Loader shown OVER content -->
 <app-loading [show]="isLoading"></app-loading>
 
-<!-- Show site only after loading -->
-<div *ngIf="!isLoading">
-  <app-header></app-header>
-  <router-outlet></router-outlet>
-  <app-footer></app-footer>
-</div>
+<!-- Page content is always rendered so media can load -->
+<app-header></app-header>
+<router-outlet></router-outlet>
+<app-footer></app-footer>
