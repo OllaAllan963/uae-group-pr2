@@ -5,10 +5,11 @@
     <app-footer></app-footer>
 </div> -->
 
+
 <app-loading [show]="isLoading"></app-loading>
 
 <app-header></app-header>
 
-<router-outlet *ngIf="!isLoading"></router-outlet>
+<router-outlet></router-outlet>
 
 <app-footer></app-footer>

@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError, RouterOutlet } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { TranslateService } from '@ngx-translate/core';
 import { SharedModule } from './shared/shared.module';
-import { LoadingComponent } from './shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-root',
@@ -14,20 +13,25 @@ import { LoadingComponent } from './shared/components/loading/loading.component'
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'uaegroupProject';
-
+  isLoading: boolean = true;
+  private router = inject(Router);
   translateService = inject(TranslateService);
 
   ngOnInit() {
     this.translateService.setDefaultLang('ar');
-  }
 
-  isLoading: boolean = true;
+    // Listen to router events
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.isLoading = true;
+      }
 
-  ngAfterViewInit() {
-    this.waitForMediaToLoad().then(() => {
-      this.isLoading = false;
-      console.log( this.isLoading)
+      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+        // Wait for images and videos to load on the new route
+        this.waitForMediaToLoad().then(() => {
+          this.isLoading = false;
+        });
+      }
     });
   }
 
