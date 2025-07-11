@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   Router,
   NavigationStart,
@@ -19,13 +19,13 @@ import { SharedModule } from './shared/shared.module';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isLoading: boolean = true;
 
   private router = inject(Router);
   private translateService = inject(TranslateService);
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.translateService.setDefaultLang('ar');
 
     this.router.events.subscribe(event => {
@@ -74,30 +74,29 @@ export class AppComponent {
         }
       });
 
-      // Wait for videos to start rendering (playing)
+      // Wait for videos to play
       videos.forEach(video => {
         const onPlaying = () => {
           video.removeEventListener('playing', onPlaying);
           checkDone();
         };
 
-        if (!video.paused && !video.ended) {
+        if (!video.paused && !video.ended && video.readyState >= 2) {
           checkDone(); // Already playing
         } else {
           video.addEventListener('playing', onPlaying);
 
-          // Try to autoplay
+          // Try autoplay
           const playPromise = video.play();
           if (playPromise && typeof playPromise.then === 'function') {
             playPromise.catch(() => {
-              // autoplay blocked, user needs to trigger manually
-              // we'll rely on fallback timeout
+              // Autoplay blocked — rely on fallback timeout
             });
           }
         }
       });
 
-      // Fallback if videos never play (max wait 15s)
+      // Fallback: ensure loading ends after 15 seconds max
       setTimeout(() => {
         resolve();
       }, 15000);
