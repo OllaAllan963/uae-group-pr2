@@ -20,13 +20,12 @@ import { SharedModule } from './shared/shared.module';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  isFullLoading: boolean = true;    // Full screen loader on initial load
-  isSectionLoading: boolean = false; // Inline loader on route navigation
+  isFullLoading: boolean = true;       // Fullscreen loader for first load
+  isSectionLoading: boolean = false;   // Inline loader for route navigation
+  private firstLoadDone = false;
 
   private router = inject(Router);
   private translateService = inject(TranslateService);
-
-  private firstLoadDone = false;
 
   ngOnInit(): void {
     this.translateService.setDefaultLang('ar');
@@ -34,8 +33,15 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         if (this.firstLoadDone) {
-          // Show inline loader on navigation
+          console.log('➡️ Navigation started');
+
+          // Step 1: show the loader
           this.isSectionLoading = true;
+
+          // Step 2: Wait a tick and THEN run loading logic
+          setTimeout(() => {
+            this.handleNavigationLoading();
+          }, 0);
         }
       }
 
@@ -46,17 +52,16 @@ export class AppComponent implements OnInit {
       ) {
         if (!this.firstLoadDone) {
           this.handleInitialLoading();
-        } else {
-          this.handleNavigationLoading();
         }
       }
     });
 
-    // Run initial load loader at start
+    // First time load
     this.handleInitialLoading();
   }
 
   private async handleInitialLoading(): Promise<void> {
+    console.log('⏳ First load: waiting 5s + media...');
     const wait5Seconds = new Promise(resolve => setTimeout(resolve, 5000));
     const waitMedia = this.waitForMediaToRender();
 
@@ -64,15 +69,18 @@ export class AppComponent implements OnInit {
 
     this.isFullLoading = false;
     this.firstLoadDone = true;
+    console.log('✅ Initial load complete');
   }
 
   private async handleNavigationLoading(): Promise<void> {
+    console.log('⏳ Navigation: waiting 2s + media...');
     const wait2Seconds = new Promise(resolve => setTimeout(resolve, 2000));
     const waitMedia = this.waitForMediaToRender();
 
     await Promise.all([wait2Seconds, waitMedia]);
 
     this.isSectionLoading = false;
+    console.log('✅ Navigation complete');
   }
 
   private waitForMediaToRender(): Promise<void> {
