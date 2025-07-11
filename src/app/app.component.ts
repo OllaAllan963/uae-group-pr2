@@ -5,7 +5,7 @@ import {
   NavigationEnd,
   NavigationCancel,
   NavigationError,
-  RouterOutlet,
+  RouterOutlet
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { HeaderComponent } from './components/header/header.component';
@@ -17,19 +17,18 @@ import { SharedModule } from './shared/shared.module';
   standalone: true,
   imports: [RouterOutlet, HeaderComponent, FooterComponent, SharedModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'uaegroupProject';
   isLoading: boolean = true;
 
   private router = inject(Router);
-  translateService = inject(TranslateService);
+  private translateService = inject(TranslateService);
 
   ngOnInit() {
     this.translateService.setDefaultLang('ar');
 
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.isLoading = true;
       }
@@ -39,15 +38,15 @@ export class AppComponent {
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.waitForMediaToPlay().then(() => {
+        this.waitForMediaToRender().then(() => {
           this.isLoading = false;
         });
       }
     });
   }
 
-  private waitForMediaToPlay(): Promise<void> {
-    return new Promise((resolve) => {
+  private waitForMediaToRender(): Promise<void> {
+    return new Promise(resolve => {
       const images = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
       const videos = Array.from(document.querySelectorAll('video')) as HTMLVideoElement[];
 
@@ -66,8 +65,8 @@ export class AppComponent {
         return;
       }
 
-      // Handle images
-      images.forEach((img) => {
+      // Load images
+      images.forEach(img => {
         if (img.complete) {
           checkDone();
         } else {
@@ -75,30 +74,33 @@ export class AppComponent {
         }
       });
 
-      // Handle videos
-      videos.forEach((video) => {
-        const onPlay = () => {
-          video.removeEventListener('play', onPlay);
+      // Wait for videos to start rendering (playing)
+      videos.forEach(video => {
+        const onPlaying = () => {
+          video.removeEventListener('playing', onPlaying);
           checkDone();
         };
 
         if (!video.paused && !video.ended) {
-          checkDone();
+          checkDone(); // Already playing
         } else {
-          video.addEventListener('play', onPlay);
+          video.addEventListener('playing', onPlaying);
 
-          // Try to force autoplay
+          // Try to autoplay
           const playPromise = video.play();
           if (playPromise && typeof playPromise.then === 'function') {
             playPromise.catch(() => {
-              // Autoplay blocked — wait for user interaction
+              // autoplay blocked, user needs to trigger manually
+              // we'll rely on fallback timeout
             });
           }
         }
       });
 
-      // Fallback timeout in case media fails
-      setTimeout(() => resolve(), 15000); // 15 seconds max wait
+      // Fallback if videos never play (max wait 15s)
+      setTimeout(() => {
+        resolve();
+      }, 15000);
     });
   }
 }
