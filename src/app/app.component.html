@@ -6,10 +6,21 @@
 </div> -->
 
 
-<!-- Loader shown OVER content -->
-<app-loading [show]="isLoading"></app-loading>
+<!-- Full screen loader (initial load) -->
+<app-loading [show]="isFullLoading"></app-loading>
 
-<!-- Page content is always rendered so media can load -->
+<!-- Header -->
 <app-header></app-header>
+
+<!-- Inline loader between header and footer for route navigation -->
+<div *ngIf="isSectionLoading" class="section-loader">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<!-- Main router content -->
 <router-outlet></router-outlet>
+
+<!-- Footer -->
 <app-footer></app-footer>
