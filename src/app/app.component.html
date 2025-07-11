@@ -8,8 +8,9 @@
 
 <app-loading [show]="isLoading"></app-loading>
 
-<app-header></app-header>
-
-<router-outlet></router-outlet>
-
-<app-footer></app-footer>
+<!-- Show site only after loading -->
+<div *ngIf="!isLoading">
+  <app-header></app-header>
+  <router-outlet></router-outlet>
+  <app-footer></app-footer>
+</div>

@@ -38,11 +38,22 @@ export class AppComponent implements OnInit {
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
-        this.waitForMediaToRender().then(() => {
-          this.isLoading = false;
-        });
+        this.handleLoading();
       }
     });
+
+    // Run initially on first load (in case no route event happens)
+    this.handleLoading();
+  }
+
+  private async handleLoading(): Promise<void> {
+    const tenSecondsPassed = new Promise(resolve => setTimeout(resolve, 10000));
+    const mediaLoaded = this.waitForMediaToRender();
+
+    // Wait for both 10s and media to finish
+    await Promise.all([tenSecondsPassed, mediaLoaded]);
+
+    this.isLoading = false;
   }
 
   private waitForMediaToRender(): Promise<void> {
@@ -65,7 +76,7 @@ export class AppComponent implements OnInit {
         return;
       }
 
-      // Load images
+      // Wait for images
       images.forEach(img => {
         if (img.complete) {
           checkDone();
@@ -90,13 +101,13 @@ export class AppComponent implements OnInit {
           const playPromise = video.play();
           if (playPromise && typeof playPromise.then === 'function') {
             playPromise.catch(() => {
-              // Autoplay blocked — rely on fallback timeout
+              // autoplay blocked
             });
           }
         }
       });
 
-      // Fallback: ensure loading ends after 15 seconds max
+      // Fallback: max 15s for media in case it never plays
       setTimeout(() => {
         resolve();
       }, 15000);
